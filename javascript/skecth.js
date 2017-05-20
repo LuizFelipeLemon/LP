@@ -1,6 +1,6 @@
 var dama1 = []; // cria um array para cada jogador
 var dama2 = [];
-
+var canvas;
 
 
 function preload() {
@@ -9,7 +9,8 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(1700, 1700); //Cria um tela 600x600
+  canvas = createCanvas(600, 600); //Cria um tela 600x600
+  canvas.mouseClicked(clicou);
   drawBoard(); //Chama a funcao que vai desenhar o tabuleiro
   for (var i = 0; i < 12; i++) {
     dama1[i] = new Dama(true);
@@ -47,4 +48,35 @@ function drawBoard() { //Desenha o tabuleiro
     }
     white = !white; // Alterna novamente para cada linha
   }
+}
+
+function clicou() {
+  var mouseVector = createVector(mouseX, mouseY);
+  var dist = Infinity;
+  var index = -1;
+  var player;
+
+  for (var i = 0; i < 24; i++) {
+    if (i < 12) {
+      var d = p5.Vector.dist(dama1[i].position, mouseVector);
+      if (d < dist) {
+        dist = d;
+        index = i;
+        player = 1;
+      }
+    } else {
+      var v1 = createVector(600 - dama2[i - 12].position.x, 600 - dama2[i - 12].position.y);
+      var d2 = p5.Vector.dist(v1, mouseVector);
+      console.log(dama2[i - 12].position.x, dama2[i - 12].position.y);
+      if (d < dist) {
+        console.log("Entrei no if");
+        dist = d;
+        index = i - 12;
+        player = 2;
+      }
+    }
+  }
+  console.log(index, player);
+
+
 }

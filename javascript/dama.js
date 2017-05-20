@@ -4,6 +4,7 @@ function Dama(color) {
 
 
 
+
 }
 
 Dama.prototype.show = function(i) {
@@ -19,21 +20,23 @@ Dama.prototype.show = function(i) {
   }
   var y = parseInt(i / 4) * 75 + 37.5;
   if (parseInt(i / 4) < 1) {
+
     var x = 75 * (2 * i) + 37.5;
-    console.log(x);
-    ellipse(x, y, 50, 50);
 
   } else if (parseInt(i / 4) < 2) {
 
     var x = 75 * (2 * (i - 4) + 1) + 37.5;
-    console.log(x);
-    ellipse(x, y, 50, 50);
+
   } else {
+
     var x = 75 * 2 * (i - 8) + 37.5;
-    console.log(x);
-    ellipse(x, y, 50, 50);
+
   }
+
+  ellipse(x, y, 50, 50);
   pop();
+  this.position.x = x;
+  this.position.y = y;
 
 };
 /*

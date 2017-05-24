@@ -43,7 +43,11 @@ Dama.prototype.begin = function(i) {
   this.position.x = x;
   this.position.y = y;
   this.casa = createVector(parseInt(x / 75), parseInt(y / 75));
-  console.log(this.casa);
+  if (this.color) {
+    tabuleiro[this.casa.x][this.casa.y] = 2;
+  } else {
+    tabuleiro[this.casa.x][this.casa.y] = 3;
+  }
 
 };
 
@@ -55,5 +59,15 @@ Dama.prototype.update = function() {
     fill(255);
 
   }
-  ellipse(this.position.x, this.position.y, 50, 50);
+
+  ellipse(this.position.x, this.position.y, 50, 50); // desenhar a ellipse
 };
+
+Dama.prototype.move = function(casa) {
+  console.log("LUIZ", casa);
+  console.log(this.position);
+  this.position.x = 75 * casa.x + 37.5;
+  this.position.y = 75 * casa.y + 37.5;
+  console.log(this.position);
+  this.casa = casa;
+}

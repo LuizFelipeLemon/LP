@@ -5,6 +5,7 @@ var update = false;
 var index = 0;
 var player;
 var origin;
+var tabuleiro = new Array(8); // matriz para mapeamento do tabuleiro
 
 function preload() {
   //tabuleiro = loadImage("images/tabuleiro.png");
@@ -12,24 +13,47 @@ function preload() {
 }
 
 function setup() {
+
   canvas = createCanvas(601, 601); //Cria um tela 600x600
   canvas.mouseClicked(clicou);
   drawBoard(); //Chama a funcao que vai desenhar o tabuleiro
+  /*
+    ___________________________________
+    | 0 --> casa preta                 |
+    | 1 --> casa Branca                |
+    | 2 -- > peça vermelha             |
+    | 3 -- > peça brnca                |
+    |__________________________________|
+
+  */
+
+  for (var i = 0; i < 8; i++) { //Preenche a matriz com casas pretas e brancas
+    tabuleiro[i] = new Array(8);
+    var k = 0;
+    for (var j = 0; j < 8; j++) {
+      if ((i + j) % 2 == 0) {
+        tabuleiro[i][j] = 0;
+      } else {
+        tabuleiro[i][j] = 1;
+      }
+    }
+
+  }
+  console.log(tabuleiro);
+
   for (var i = 0; i < 12; i++) {
     dama1[i] = new Dama(true);
     dama2[i] = new Dama(false);
     dama1[i].begin(i);
     dama2[i].begin(i);
   }
-
-
-
-
+  //console.log(tabuleiro);
 }
 
 
 function draw() {
   drawBoard(); //Mostra o tabuleiro
+
   for (var i = 0; i < 12; i++) { //Mostra as pecas
     dama1[i].update();
     dama2[i].update();
@@ -69,33 +93,19 @@ function drawBoard() { //Desenha o tabuleiro
 function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima da posicao do mouse
   if (!update) { //Verifica se o clique eh para selecionar ou para soltar a peca
 
-    var mouseVector = createVector(mouseX, mouseY);
-    var dist = Infinity;
+    var mouseVector = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
+    var indexOcupado = casaOcupada(mouseVector);
 
-    for (var i = 0; i < 24; i++) {
-      if (i < 12) { //Procura a peca mais proximas entre as pecas de cima
-        var d = p5.Vector.dist(dama1[i].position, mouseVector);
-        if (d < dist) {
-          dist = d;
-          index = i;
-          player = 1;
-        }
-      } else { //Procura a peca mais proximas entre as pecas de baixo
-
-        var d2 = p5.Vector.dist(dama2[i - 12].position, mouseVector);
-        if (d2 < dist) {
-          dist = d2;
-          index = i - 12;
-          player = 2;
-        }
-      }
+    if (indexOcupado != -1) {
+      index = indexOcupado;
     }
+
     if (player == 1) {
-      origin = createVector(dama1[index].position.x, dama1[index].position.y);
+      origin = createVector(dama1[index].casa.x, dama1[index].casa.y);
     } else {
-      origin = createVector(dama2[index].position.x, dama2[index].position.y);
+      origin = createVector(dama2[index].casa.x, dama2[index].casa.y);
     }
-    console.log(origin);
+    //console.log(origin);
     update = true; //Informa que o proximo clique vai ser para soltar
 
   } else { //Se o clique for para soltar a peca
@@ -106,9 +116,30 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     var distMin = Infinity;
     var finalPos; // Vetor que vai guardar as coordenadas da peca
     var k = 0; //garante que somente as casas pretas sejam verificadas
+    var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
+    console.log(tabuleiro);
+    if (tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+      console.log("PODE FICAR");
+      if (player == 1) {
+        dama1[index].move(casaMouse);
+      } else {
+        dama2[index].move(casaMouse);
 
+      }
+
+
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 1) {
+      console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
+      if (player == 1) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+
+      }
+    }
+    /*
     for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
-      for (var i = k; i < 8; i += 2) { //Percorre todas as casas pretas
+      for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
 
         centro = createVector(i * 75 + 37.5, j * 75 + 37.5); // vetor das coordenadas do centro da casa que esta sendo verificada
         var posPeca;
@@ -130,6 +161,7 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
         k = 0;
       }
     }
+
     if (player == 1) { // Move a peca para o centro da casa mais proxima
       if (!casaOcupada(casa, 1)) {
         dama1[index].position = finalPos;
@@ -149,18 +181,22 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     } else {
       console.log("Casa OCUPADA!!");
     }
+    */
   }
+
 }
 
-function casaOcupada(casa, play) {
-  var ocupada = false;
+function casaOcupada(casa) {
+  var indexOcupado = -1;
   for (var i = 0; i < 12; i++) {
-    console.log(casa, dama1[i].casa);
-    if (dama1[i].casa.equals(casa) || dama2[i].casa.equals(casa)) {
-      ocupada = true;
-
+    if (dama1[i].casa.equals(casa)) {
+      indexOcupado = i;
+      player = 1;
+    } else if (dama2[i].casa.equals(casa)) {
+      indexOcupado = i;
+      player = 2;
     }
   }
-  return ocupada;
-
+  console.log(indexOcupado, player);
+  return indexOcupado;
 }

@@ -24,10 +24,6 @@ function setup() {
     | 2 -- > peça vermelha             |
     | 3 -- > peça brnca                |
     |__________________________________|
-<<<<<<< HEAD:javascript/skecth.js
-=======
-
->>>>>>> b4e7460db65bfb1de95de51d1f0e7c4bb296acb6:skecth.js
   */
 
   for (var i = 0; i < 8; i++) { //Preenche a matriz com casas pretas e brancas
@@ -47,8 +43,8 @@ function setup() {
   for (var i = 0; i < 12; i++) {
     dama1[i] = new Dama(true);
     dama2[i] = new Dama(false);
-    dama1[i].begin(i);
-    dama2[i].begin(i);
+    dama1[i].begin(i, tabuleiro);
+    dama2[i].begin(i, tabuleiro);
   }
   //console.log(tabuleiro);
 }
@@ -108,7 +104,7 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     } else {
       origin = createVector(dama2[index].casa.x, dama2[index].casa.y);
     }
-    //console.log(origin);
+    console.log("ORIGIN", origin);
     update = true; //Informa que o proximo clique vai ser para soltar
 
   } else { //Se o clique for para soltar a peca
@@ -121,90 +117,87 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     var k = 0; //garante que somente as casas pretas sejam verificadas
     var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
     console.log(tabuleiro);
-    if (tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+    if (tabuleiro[casaMouse.x][casaMouse.y] == 1) {
+      console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
+      if (player == 1) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 2 || tabuleiro[casaMouse.x][casaMouse.y] == 3) {
+      console.log("Casa ocupada", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
+      if (player == 1) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+    } else if (p5.Vector.sub(origin, casaMouse).mag() < sqrt(2)) { // Se andou mais que uma casa
+
+
+
+    } else if (p5.Vector.sub(origin, casaMouse).y > 0) { // Se andou mais que uma casa
+      console.log("Andou pra tras10");
+      if (player == 1) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+
+
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0) {
       console.log("PODE FICAR");
+      console.log(p5.Vector.sub(origin, casaMouse));
       if (player == 1) {
-        dama1[index].move(casaMouse);
+        dama1[index].move(casaMouse, tabuleiro);
       } else {
-        dama2[index].move(casaMouse);
-<<<<<<< HEAD:javascript/skecth.js
-
-      }
-
-
-    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 1) {
-      console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
-      if (player == 1) {
-        dama1[index].move(origin);
-      } else {
-        dama2[index].move(origin);
-=======
-
-      }
-
-
-    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 1) {
-      console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
-      if (player == 1) {
-        dama1[index].move(origin);
-      } else {
-        dama2[index].move(origin);
-
-      }
-    }
-    /*
-    for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
-      for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
->>>>>>> b4e7460db65bfb1de95de51d1f0e7c4bb296acb6:skecth.js
-
-      }
-    }
-    /*
-    for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
-      for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
-        centro = createVector(i * 75 + 37.5, j * 75 + 37.5); // vetor das coordenadas do centro da casa que esta sendo verificada
-        var posPeca;
-        if (player == 1) {
-          posPeca = dama1[index].position;
-        } else {
-          posPeca = dama2[index].position;
-        }
-        var d = p5.Vector.dist(centro, posPeca);
-        if (d < distMin) { // procura a menor distancia entre a posicao da peca e o centro de uma casa
-          finalPos = centro;
-          casa = createVector(i, j);
-          distMin = d;
-        }
-      }
-      if (j % 2 == 0) {
-        k = 1;
-      } else {
-        k = 0;
+        dama2[index].move(casaMouse, tabuleiro);
       }
     }
 
-    if (player == 1) { // Move a peca para o centro da casa mais proxima
-      if (!casaOcupada(casa, 1)) {
-        dama1[index].position = finalPos;
-        dama1[index].casa = casa;
-        console.log("CASA: ", casa.x, casa.y);
-      } else {
-        dama1[index].position = origin;
-      }
-    } else if (player == 2) {
-      if (!casaOcupada(casa, 2)) {
-        dama2[index].position = finalPos;
-        dama2[index].casa = casa;
-        console.log("CASA: ", casa.x, casa.y);
-      } else {
-        dama2[index].position = origin;
-      }
-    } else {
-      console.log("Casa OCUPADA!!");
-    }
-    */
   }
-
+  /*
+  for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
+    for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
+      centro = createVector(i * 75 + 37.5, j * 75 + 37.5); // vetor das coordenadas do centro da casa que esta sendo verificada
+      var posPeca;
+      if (player == 1) {
+        posPeca = dama1[index].position;
+      } else {
+        posPeca = dama2[index].position;
+      }
+      var d = p5.Vector.dist(centro, posPeca);
+      if (d < distMin) { // procura a menor distancia entre a posicao da peca e o centro de uma casa
+        finalPos = centro;
+        casa = createVector(i, j);
+        distMin = d;
+      }
+    }
+    if (j % 2 == 0) {
+      k = 1;
+    } else {
+      k = 0;
+    }
+  }
+  if (player == 1) { // Move a peca para o centro da casa mais proxima
+    if (!casaOcupada(casa, 1)) {
+      dama1[index].position = finalPos;
+      dama1[index].casa = casa;
+      console.log("CASA: ", casa.x, casa.y);
+    } else {
+      dama1[index].position = origin;
+    }
+  } else if (player == 2) {
+    if (!casaOcupada(casa, 2)) {
+      dama2[index].position = finalPos;
+      dama2[index].casa = casa;
+      console.log("CASA: ", casa.x, casa.y);
+    } else {
+      dama2[index].position = origin;
+    }
+  } else {
+    console.log("Casa OCUPADA!!");
+  }
+  */
 }
 
 function casaOcupada(casa) {
@@ -221,4 +214,5 @@ function casaOcupada(casa) {
   console.log(indexOcupado, player);
   return indexOcupado;
 }
+
 

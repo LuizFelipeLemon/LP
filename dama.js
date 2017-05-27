@@ -80,4 +80,3 @@ Dama.prototype.move = function(casa, tabu) {
   this.position.y = 75 * casa.y + 37.5;
 
 }
-

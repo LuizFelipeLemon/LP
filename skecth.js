@@ -24,7 +24,10 @@ function setup() {
     | 2 -- > peça vermelha             |
     | 3 -- > peça brnca                |
     |__________________________________|
+<<<<<<< HEAD:javascript/skecth.js
+=======
 
+>>>>>>> b4e7460db65bfb1de95de51d1f0e7c4bb296acb6:skecth.js
   */
 
   for (var i = 0; i < 8; i++) { //Preenche a matriz com casas pretas e brancas
@@ -124,6 +127,18 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
         dama1[index].move(casaMouse);
       } else {
         dama2[index].move(casaMouse);
+<<<<<<< HEAD:javascript/skecth.js
+
+      }
+
+
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 1) {
+      console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
+      if (player == 1) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+=======
 
       }
 
@@ -140,7 +155,13 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     /*
     for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
       for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
+>>>>>>> b4e7460db65bfb1de95de51d1f0e7c4bb296acb6:skecth.js
 
+      }
+    }
+    /*
+    for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
+      for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
         centro = createVector(i * 75 + 37.5, j * 75 + 37.5); // vetor das coordenadas do centro da casa que esta sendo verificada
         var posPeca;
         if (player == 1) {
@@ -200,3 +221,4 @@ function casaOcupada(casa) {
   console.log(indexOcupado, player);
   return indexOcupado;
 }
+

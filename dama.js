@@ -7,7 +7,7 @@ function Dama(color) {
 
 }
 
-Dama.prototype.begin = function(i) {
+Dama.prototype.begin = function(i, tabu) {
   noStroke();
 
   var y = parseInt(i / 4) * 75 + 37.5;
@@ -44,9 +44,9 @@ Dama.prototype.begin = function(i) {
   this.position.y = y;
   this.casa = createVector(parseInt(x / 75), parseInt(y / 75));
   if (this.color) {
-    tabuleiro[this.casa.x][this.casa.y] = 2;
+    tabu[this.casa.x][this.casa.y] = 2;
   } else {
-    tabuleiro[this.casa.x][this.casa.y] = 3;
+    tabu[this.casa.x][this.casa.y] = 3;
   }
 
 };
@@ -63,11 +63,21 @@ Dama.prototype.update = function() {
   ellipse(this.position.x, this.position.y, 50, 50); // desenhar a ellipse
 };
 
-Dama.prototype.move = function(casa) {
+Dama.prototype.move = function(casa, tabu) {
   console.log("LUIZ", casa);
-  console.log(this.position);
+  console.log("LUIZ", this.casa);
+  if (!casa.equals(this.casa)) { // Se a casa alvo for diferente da casa atual
+    console.log(tabu);
+    tabu[this.casa.x][this.casa.y] = 0;
+    this.casa = casa;
+    if (this.color) {
+      tabu[this.casa.x][this.casa.y] = 2;
+    } else {
+      tabu[this.casa.x][this.casa.y] = 3;
+    }
+  }
   this.position.x = 75 * casa.x + 37.5;
   this.position.y = 75 * casa.y + 37.5;
-  console.log(this.position);
-  this.casa = casa;
+
 }
+

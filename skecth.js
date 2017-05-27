@@ -90,14 +90,11 @@ function drawBoard() { //Desenha o tabuleiro
 }
 
 function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima da posicao do mouse
-  if (!update) { //Verifica se o clique eh para selecionar ou para soltar a peca
+  var mouseVector = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
+  if (!update && casaOcupada(mouseVector) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
+    console.log("Selected");
 
-    var mouseVector = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
-    var indexOcupado = casaOcupada(mouseVector);
-
-    if (indexOcupado != -1) {
-      index = indexOcupado;
-    }
+    index = casaOcupada(mouseVector);
 
     if (player == 1) {
       origin = createVector(dama1[index].casa.x, dama1[index].casa.y);
@@ -107,36 +104,31 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     console.log("ORIGIN", origin);
     update = true; //Informa que o proximo clique vai ser para soltar
 
-  } else { //Se o clique for para soltar a peca
+  } else if (update) { //Se o clique for para soltar a peca
+    //Aqui estao as condi´çoes pra verificar se o movimento foi válido
 
     update = false; //Informa que o proximo clique vai ser para selecionar
 
-    var casa; // Vetor que vai guardar a linha e a coluna da casa que a peca pertence
-    var distMin = Infinity;
-    var finalPos; // Vetor que vai guardar as coordenadas da peca
-    var k = 0; //garante que somente as casas pretas sejam verificadas
-    var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
+    var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // casa que se deseja mover
+    var movimento = p5.Vector.sub(origin, casaMouse); // Cria um vetor com a informacao do movimento
     console.log(tabuleiro);
-    if (tabuleiro[casaMouse.x][casaMouse.y] == 1) {
+
+    if (tabuleiro[casaMouse.x][casaMouse.y] == 1) { // verifica se eh uma casa branca
       console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
       if (player == 1) {
         dama1[index].move(origin);
       } else {
         dama2[index].move(origin);
       }
-    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 2 || tabuleiro[casaMouse.x][casaMouse.y] == 3) {
-      console.log("Casa ocupada", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 2 || tabuleiro[casaMouse.x][casaMouse.y] == 3) { // verifica se tem a casa ja esta ocupada
+      console.log("Casa ocupada ou eh sua origem", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
       if (player == 1) {
         dama1[index].move(origin);
       } else {
         dama2[index].move(origin);
       }
-    } else if (p5.Vector.sub(origin, casaMouse).mag() < sqrt(2)) { // Se andou mais que uma casa
-
-
-
-    } else if (p5.Vector.sub(origin, casaMouse).y > 0) { // Se andou mais que uma casa
-      console.log("Andou pra tras10");
+    } else if (movimento.y > 0 && player == 1) { // Se uma peca vermelha andou para tras
+      console.log("Andou pra tras");
       if (player == 1) {
         dama1[index].move(origin);
       } else {
@@ -144,9 +136,21 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
       }
 
 
-    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+    } else if (movimento.y < 0 && player == 2) { // Se uyma peca branca andou para tras
+      console.log("Andou pra tras");
+      if (player == 1) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+
+
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() > sqrt(2)) { // Se andou mais que uma casa mas foi pra uma casa vazia
+
+
+
+    } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() == sqrt(2)) { // Se moveu apenas uma casa para uma casa vazia
       console.log("PODE FICAR");
-      console.log(p5.Vector.sub(origin, casaMouse));
       if (player == 1) {
         dama1[index].move(casaMouse, tabuleiro);
       } else {
@@ -211,8 +215,11 @@ function casaOcupada(casa) {
       player = 2;
     }
   }
-  console.log(indexOcupado, player);
   return indexOcupado;
 }
 
+function eaiComeu() {
 
+
+
+}

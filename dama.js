@@ -67,7 +67,7 @@ Dama.prototype.move = function(casa, tabu) {
   //console.log("LUIZ", casa);
   //console.log("LUIZ", this.casa);
   if (!casa.equals(this.casa)) { // Se a casa alvo for diferente da casa atual
-    console.log(tabu);
+    //console.log(tabu);
     tabu[this.casa.x][this.casa.y] = 0;
     this.casa = casa;
     if (this.color) {

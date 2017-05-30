@@ -111,10 +111,10 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
 
     var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // casa que se deseja mover
     var movimento = p5.Vector.sub(origin, casaMouse); // Cria um vetor com a informacao do movimento
-    console.log(tabuleiro);
+    console.log(tabuleiro[casaMouse.x][casaMouse.y]);
 
     if (tabuleiro[casaMouse.x][casaMouse.y] == 1) { // verifica se eh uma casa branca
-      console.log("NÂO PODE FICAR PQ È BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
+      console.log("NÂO PODE FICAR PQ È CASA BRANCA", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
       if (player == 1) {
         dama1[index].move(origin);
       } else {
@@ -146,7 +146,17 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
 
 
     } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() > sqrt(2)) { // Se andou mais que uma casa mas foi pra uma casa vazia
+      console.log("Será que comeu", casaMouse, origin);
+      if (player == 1) {
+        dama1[index].move(casaMouse, tabuleiro);
+      } else {
+        dama2[index].move(casaMouse, tabuleiro);
+      }
 
+      if (eaiComeu(casaMouse, origin)) {
+        console.log("Comeu MSM", casaMouse);
+
+      }
 
 
     } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() == sqrt(2)) { // Se moveu apenas uma casa para uma casa vazia
@@ -159,49 +169,6 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     }
 
   }
-  /*
-  for (var j = 0; j < 8; j += 1) { //Percorre todas as linhas
-    for (var i = k; i < 8 + k; i += 2) { //Percorre todas as casas pretas
-      centro = createVector(i * 75 + 37.5, j * 75 + 37.5); // vetor das coordenadas do centro da casa que esta sendo verificada
-      var posPeca;
-      if (player == 1) {
-        posPeca = dama1[index].position;
-      } else {
-        posPeca = dama2[index].position;
-      }
-      var d = p5.Vector.dist(centro, posPeca);
-      if (d < distMin) { // procura a menor distancia entre a posicao da peca e o centro de uma casa
-        finalPos = centro;
-        casa = createVector(i, j);
-        distMin = d;
-      }
-    }
-    if (j % 2 == 0) {
-      k = 1;
-    } else {
-      k = 0;
-    }
-  }
-  if (player == 1) { // Move a peca para o centro da casa mais proxima
-    if (!casaOcupada(casa, 1)) {
-      dama1[index].position = finalPos;
-      dama1[index].casa = casa;
-      console.log("CASA: ", casa.x, casa.y);
-    } else {
-      dama1[index].position = origin;
-    }
-  } else if (player == 2) {
-    if (!casaOcupada(casa, 2)) {
-      dama2[index].position = finalPos;
-      dama2[index].casa = casa;
-      console.log("CASA: ", casa.x, casa.y);
-    } else {
-      dama2[index].position = origin;
-    }
-  } else {
-    console.log("Casa OCUPADA!!");
-  }
-  */
 }
 
 function casaOcupada(casa) {
@@ -218,8 +185,16 @@ function casaOcupada(casa) {
   return indexOcupado;
 }
 
-function eaiComeu() {
+function eaiComeu(casaMouse, origin) {
+  console.log(tabuleiro, casaMouse);
+  if (tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3) {
+    return true;
+  } else if (tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0) {
 
+  } else if (tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0) {
 
+  } else if (tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0) {
 
+  }
+  return false;
 }

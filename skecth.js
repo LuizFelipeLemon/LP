@@ -52,10 +52,15 @@ function setup() {
 
 function draw() {
   drawBoard(); //Mostra o tabuleiro
-
-  for (var i = 0; i < 12; i++) { //Mostra as pecas
+  //console.log(dama1.length);
+  for (var i = dama1.length - 1; i >= 0; i--) { //Mostra as pecas
     dama1[i].update();
+
+    ///console.log("entreiaslf");
+  }
+  for (var i = dama2.length - 1; i >= 0; i--) { //Mostra as pecas
     dama2[i].update();
+
     ///console.log("entreiaslf");
   }
   if (update) { //atualiza as posicoes da peca
@@ -91,12 +96,12 @@ function drawBoard() { //Desenha o tabuleiro
 
 function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima da posicao do mouse
   var mouseVector = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75));
-  
-  if (!update && casaOcupada(mouseVector) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
+
+  if (!update && casaOcupada(mouseVector, player) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
     console.log("Selected");
 
-    index = casaOcupada(mouseVector);
- 
+    index = casaOcupada(mouseVector, player);
+
     if (player) {
       origin = createVector(dama1[index].casa.x, dama1[index].casa.y);
     } else {
@@ -122,7 +127,7 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
       } else {
         dama2[index].move(origin);
       }
-      player = ! player;
+      player = !player;
 
     } else if (tabuleiro[casaMouse.x][casaMouse.y] == 2 || tabuleiro[casaMouse.x][casaMouse.y] == 3) { // verifica se a casa ja esta ocupada
       console.log("Casa ocupada ou eh sua origem", casaMouse, tabuleiro[casaMouse.x][casaMouse.y]);
@@ -131,111 +136,131 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
       } else {
         dama2[index].move(origin);
       }
-      player = ! player;
+      player = !player;
 
     } else if (movimento.y == -1 && player) { // Se uma peca vermelha andou para tras
       console.log("Andou pra tras");
       dama1[index].move(origin);
-      player = ! player;
+      player = !player;
 
-    } else if (movimento.y  == 1 && !player) { // Se uma peca branca andou para tras
+    } else if (movimento.y == 1 && !player) { // Se uma peca branca andou para tras
       console.log("Andou pra tras");
       dama2[index].move(origin);
-      player = ! player;
+      player = !player;
 
     } else if (movimento.y == 2) { // Se andou duas linhas para baixo
 
-        console.log("Verificação da captura simples", casaMouse, origin);
-        if(movimento.x == -2){  // Se andou duas colunas para a esquerda
-          if(player){ // Se foi uma pecça vermelha que realizou este movimento
-            if(tabuleiro[origin.x-1][origin.y+1] == 3){ // Se na casa que foi pulada havia uma peça inimiga
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama1[index].move(origin);
-                player = !player;
-              }
-            }else{  // Se foi uma peça branca que realizou este movimento
-              if(tabuleiro[origin.x-1][origin.y+1] == 2){
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama2[index].move(origin);
-                player = !player;
-              }
-            }
+      console.log("Verificação da captura simples", casaMouse, origin);
+      if (movimento.x == -2) { // Se andou duas colunas para a esquerda
+        if (player) { // Se foi uma pecça vermelha que realizou este movimento
+          if (tabuleiro[origin.x - 1][origin.y + 1] == 3) { // Se na casa que foi pulada havia uma peça inimiga
+            console.log("Comeu legal");
+            dama1[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(1, -1), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama1[index].move(origin);
+            player = !player;
+          }
+        } else { // Se foi uma peça branca que realizou este movimento
+          if (tabuleiro[origin.x - 1][origin.y + 1] == 2) { // Se na casa que foi pulada havia uma peça inimiga
+            console.log("Comeu legal");
+            dama2[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(1, -1), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama2[index].move(origin);
+            player = !player;
+          }
         }
-        else if(movimento.x == 2){  // Se andou duas colunas para a direita
-          if(player){
-            if(tabuleiro[origin.x + 1][origin.y + 1] == 3){
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama1[index].move(origin);
-                player = !player;
-              }
-            }else{
-              if(tabuleiro[origin.x + 1][origin.y+1] == 2){
-              console.log("Comeu legal");
-              dama2[index].move(origin);
+      } else if (movimento.x == 2) { // Se andou duas colunas para a direita
+        if (player) { // Se foi uma peça vermelha que realizou este movimento
+          if (tabuleiro[origin.x + 1][origin.y + 1] == 3) {
+            console.log("Comeu legal");
+            dama1[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(-1, -1), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama1[index].move(origin);
+            player = !player;
+          }
+        } else { // Se foi uma peça branca que realizou este movimento
+          if (tabuleiro[origin.x + 1][origin.y + 1] == 2) {
+            console.log("Comeu legal");
+            dama2[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(-1, -1), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama2[index].move(origin);
+            player = !player;
+          }
+        }
 
-              }
-              else{
-                console.log("Não Comeu legal");
-                dama2[index].move(origin);
-                player = !player;
-              }
-            }
+      }
+    } else if (movimento.y == -2) { // Se andou duas linhas para cima
+      console.log("Verificação da captura simples", casaMouse, origin);
+      if (movimento.x == -2) {
+        if (player) { // Se foi uma peça vermelha que realizou este movimento
+          if (tabuleiro[origin.x - 1][origin.y - 1] == 3) {
+            console.log("Comeu legal");
+            dama1[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(1, 1), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama1[index].move(origin);
+            player = !player;
+          }
+        } else { // Se foi uma peça vermelha que realizou este movimento
+          if (tabuleiro[origin.x - 1][origin.y - 1] == 2) {
+            console.log("Comeu legal");
+            dama2[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(1, 1), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama2[index].move(origin);
+            player = !player;
+          }
+        }
+      } else if (movimento.x == 2) {
+        if (player) { // Se foi uma peça vermelha que realizou este movimento
+          if (tabuleiro[origin.x + 1][origin.y - 1] == 3) {
+            console.log("Comeu legal");
+            dama1[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(-1, 1), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama1[index].move(origin);
+            player = !player;
+          }
+        } else { // Se foi uma peça branca que realizou este movimento
+          if (tabuleiro[origin.x + 1][origin.y - 1] == 2) {
+            console.log("Comeu legal");
+            dama2[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(origin.sub(-1, 1), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[origin.x][origin.y] = 0; // remove a peca do tabuleiro
+          } else {
+            console.log("Não Comeu legal");
+            dama2[index].move(origin);
+            player = !player;
+          }
+        }
 
-        }
-    }else if (movimento.y == -2) { // Se andou duas linhas para cima 
-        console.log("Verificação da captura simples", casaMouse, origin);
-        if(movimento.x == -2){
-          if(player){
-            if(tabuleiro[origin.x-1][origin.y-1] == 3){
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama1[index].move(origin);
-                player = !player;
-              }
-            }else{
-              if(tabuleiro[origin.x-1][origin.y-1] == 2){
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama2[index].move(origin);
-                player = !player;
-              }
-            }
-        }
-        else if(movimento.x == 2){
-          if(player){
-            if(tabuleiro[origin.x + 1][origin.y - 1] == 3){
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama1[index].move(origin);
-                player = !player;
-              }
-            }else{
-              if(tabuleiro[origin.x + 1][origin.y-1] == 2){
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse,tabuleiro);
-              }else{
-                console.log("Não Comeu legal");
-                dama2[index].move(origin);
-                player = !player;
-              }
-            }
-
-        }
+      }
     } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() == sqrt(2)) { // Se moveu apenas uma casa e para uma casa vazia
       console.log("PODE FICAR");
       if (player) {
@@ -248,36 +273,23 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
   }
 }
 
-function casaOcupada(casa) {
+function casaOcupada(casa, play) {
   var indexOcupado = -1;
-
-  for (var i = 0; i < 12; i++) {
-    
-    if(player){
-      console.log("Entrei aqui");
+  //console.log("Casa Ocupada", casa);
+  if (play) {
+    for (var i = dama1.length - 1; i >= 0; i--) {
       if (dama1[i].casa.equals(casa)) {
-        indexOcupado = i; 
+        indexOcupado = i;
       }
-    } else{
-      if(dama2[i].casa.equals(casa)) {
-      indexOcupado = i;
+    }
+  } else {
+    for (var i = dama2.length - 1; i >= 0; i--) {
+      if (dama2[i].casa.equals(casa)) {
+        indexOcupado = i;
       }
-    } 
+    }
   }
   return indexOcupado;
 }
-
-function eaiComeu(casaMouse, origin) {
-
-  console.log(tabuleiro, casaMouse);
-
-  if(casaMouse.equals(origin)){
-    return true;
-  }else{
-    if(tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 0){
-
-    }
-  }
-  
-  return false;
+return indexOcupado;
 }

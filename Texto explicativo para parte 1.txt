@@ -7,5 +7,4 @@ Luiz Felipe Santana de Araújo Souza (Líder)
 
 
 
-O código pode ser executado rodando o arquivo index.html ou acessando o link. Todo o desenho do tabuleiro e das peças foi implementado. Toda as movimentações das peças estão implementadas, as peças se movem livremente nas peças pretas. Logo após as condições de movimentação foram implementadas, impedindo as peças de andarem nas casa brancas ou ocupadas, e também proibindo a movimentação para trás. A utilização de classes foi essencial na criação e desenvolvimento do projeto, facilitando a criação e movimentação das peças, futuramente vai facilitar a criação da jogo contra o computador.
-Restam, imediatamente, terminar as condições de movimentação das peças e implementar a captura de peças. Logo após implementar as condições que permitirão o computador jogar. Por fim um conjunto de telas de início, e uma para cada tipo de jogo.
+O código pode ser executado rodando o arquivo index.html ou acessando o link: luizfelipelemon.github.io/LP/ . Todo o jogo de dama foi terminado, incluindo a captura simples em qualquer direcao. Proximo passo eh incluir a captura andando mais de uma casa, e colocar o jogo contra o computador.

@@ -291,5 +291,4 @@ function casaOcupada(casa, play) {
   }
   return indexOcupado;
 }
-return indexOcupado;
-}
+

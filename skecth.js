@@ -291,5 +291,20 @@ function casaOcupada(casa, play) {
   }
   return indexOcupado;
 }
-return indexOcupado;
+
+function eaiComeu(origin, destiny, tabuleiro, enemy) {
+  if (origin.equals(destiny)) {
+    return true;
+  } else if (eaiComeu(destiny.sub(2, 2), origin, tabuleiro, enemy);) {
+
+
+  } else if (tabuleiro[destiny.x - 1][destiny.y + 1]) {
+
+  } else if (tabuleiro[destiny.x + 1][destiny.y - 1]) {
+
+  } else if (tabuleiro[destiny.x + 1][destiny.y + 1]) {
+
+  }
+
+
 }

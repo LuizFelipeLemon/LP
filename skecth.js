@@ -195,8 +195,12 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
           }
 
         } else {
-          console.log("Não Comeu legal");
-          dama2[index].move(origin);
+          console.log("Movimento invalido, voltei para a origem");
+          if (player) {
+            dama1[index].move(origin);
+          } else {
+            dama2[index].move(origin);
+          }
           player = !player;
         }
       } else if (movimento.y == -2) { // Se andou duas linhas para cima
@@ -254,8 +258,12 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
             }
           }
         } else {
-          console.log("Não Comeu legal");
-          dama2[index].move(origin);
+          console.log("Movimento invalido, voltei para a origem");
+          if (player) {
+            dama1[index].move(origin);
+          } else {
+            dama2[index].move(origin);
+          }
           player = !player;
         }
       } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() == sqrt(2)) { // Se moveu apenas uma casa e para uma casa vazia

@@ -401,7 +401,14 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
           }
           player = !player;
         }
-        console.log("EU sou daqui, sou da terra potiguar");
+
+      } else {
+        console.log("Movimento invalido, voltei para a origem");
+        if (player) {
+          dama1[index].move(origin);
+        } else {
+          dama2[index].move(origin);
+        }
         player = !player;
       }
       console.log("EU sou daqui, sou da terra inverter");

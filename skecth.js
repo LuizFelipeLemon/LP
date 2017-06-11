@@ -82,7 +82,7 @@ function draw() {
     } /////////////////////////////// Jogo Player vc Player\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   } else if (estado == 3) {
     fimDeJogo();
-  }else if(estado == 2){
+  } else if (estado == 2) {
     drawBoard();
     for (var i = dama1.length - 1; i >= 0; i--) { //Mostra as pecas
       dama1[i].update();
@@ -96,11 +96,11 @@ function draw() {
     }
     if (update) { //atualiza as posicoes da peca
       mouse = createVector(mouseX, mouseY);
-      
-        dama2[index].position = mouse;
-        
+
+      dama2[index].position = mouse;
+
+    }
   }
-}
 
 }
 
@@ -133,24 +133,24 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     }
   } else if (estado == 1) {
 
-      var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // Casa respectiva do mouse
-      console.log(update);
-      if (!update && casaOcupada(casaMouse, player) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
-        console.log("Selected");
+    var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // Casa respectiva do mouse
+    console.log(update);
+    if (!update && casaOcupada(casaMouse, player) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
+      console.log("Selected");
 
-        index = casaOcupada(casaMouse, player);
+      index = casaOcupada(casaMouse, player);
 
-        if (player) {
-          origin = createVector(dama1[index].casa.x, dama1[index].casa.y);
-        } else {
-          origin = createVector(dama2[index].casa.x, dama2[index].casa.y);
-        }
-        console.log("ORIGIN", origin);
-        update = true; //Informa que o proximo clique vai ser para soltar
+      if (player) {
+        origin = createVector(dama1[index].casa.x, dama1[index].casa.y);
+      } else {
+        origin = createVector(dama2[index].casa.x, dama2[index].casa.y);
+      }
+      console.log("ORIGIN", origin);
+      update = true; //Informa que o proximo clique vai ser para soltar
 
-      } else if (update) { //Se o clique for para soltar a peca
-          verifica(casaMouse);
-        }         
+    } else if (update) { //Se o clique for para soltar a peca
+      verifica(casaMouse);
+    }
   } else if (estado == 3) { // Tela de fim de Jogo
     if (mouseX >= 360 && mouseX <= 510 && mouseY >= 200 && mouseY <= 275) {
       estado = 0;
@@ -161,26 +161,39 @@ function clicou() { //Quando o mouse for clicado, procura pela peca mais proxima
     player = false;
     var computer = new Computer();
     var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // Casa respectiva do mouse
-      //console.log(casaOcupada(casaMouse, false));
-      if (!update && casaOcupada(casaMouse, false) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
-        console.log("Selected");
+    //console.log(casaOcupada(casaMouse, false));
+    if (!update && casaOcupada(casaMouse, false) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
+      console.log("Selected");
 
-        index = casaOcupada(casaMouse, false);
+      index = casaOcupada(casaMouse, false);
 
-        
-        origin = createVector(dama2[index].casa.x, dama2[index].casa.y);
-    
-        console.log("ORIGIN", origin);
-        update = true; //Informa que o proximo clique vai ser para soltar
 
-      } else if (update) { //Se o clique for para soltar a peca
-          console.log(player);
-          verifica(casaMouse);
-          console.log(player);
-          while(!verifica(computer.play()));
-          
-        }
+      origin = createVector(dama2[index].casa.x, dama2[index].casa.y);
 
+      //console.log("ORIGIN", origin);
+      update = true; //Informa que o proximo clique vai ser para soltar
+
+    } else if (update) { //Se o clique for para soltar a peca
+
+        if (verifica(casaMouse)) {
+          console.log("EITA MLK");
+          if(dama1.length >0 && dama2.length> 0){
+            console.log("Ainda tem peça");
+            do{
+              var vector = computer.play();
+              console.log(casaOcupada(vector,true)==-1,casaOcupada(vector,false)==-1);
+              //a = casaOcupada(vector,true) == -1;
+              //b = 
+            }
+            //( a || b ) && !( a && b )
+            while(!(casaOcupada(vector,true) == -1 && casaOcupada(vector,false) == -1) || !  verifica(vector));
+            console.log("Sai");
+          }
+          else{
+        estado = 3;
+      }
+      }
+    }
   }
 }
 
@@ -243,640 +256,658 @@ function fimDeJogo() {
   text("Sair", width / 2 - 177, height / 2 - 50); // texto de sair
 }
 
-function verifica(casaMouse){
+function verifica(casaMouse) {
   //Aqui estao as condi´çoes pra verificar se o movimento foi válido
 
-      update = false; //Informa que o proximo clique vai ser para selecionar
-      var movimento = p5.Vector.sub(casaMouse, origin); // Cria um vetor com a informacao do movimento
-      if (movimento.y == 2) { // Se andou duas linhas para baixo
+  update = false; //Informa que o proximo clique vai ser para selecionar
+  var movimento = p5.Vector.sub(casaMouse, origin); // Cria um vetor com a informacao do movimento
+  console.log("Para aqui",casaMouse);
+  if (movimento.y == 2) { // Se andou duas linhas para baixo
 
-        console.log("Verificação da captura simples");
-        if (movimento.x == -2) { // Se andou duas colunas para a esquerda
-          if (player) { // Se foi uma pecça vermelha que realizou este movimento
-            if (tabuleiro[origin.x - 1][origin.y + 1] == 3) { // Se na casa que foi pulada havia uma peça inimiga
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(1, -1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else { // Se foi uma peça branca que realizou este movimento
-            if (tabuleiro[origin.x - 1][origin.y + 1] == 2) { // Se na casa que foi pulada havia uma peça inimiga
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(1, -1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        } else if (movimento.x == 2) { // Se andou duas colunas para a direita
-          if (player) { // Se foi uma peça vermelha que realizou este movimento
-            if (tabuleiro[origin.x + 1][origin.y + 1] == 3) {
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(-1, -1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else { // Se foi uma peça branca que realizou este movimento
-            if (tabuleiro[origin.x + 1][origin.y + 1] == 2) {
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(-1, -1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
+    console.log("Verificação da captura simples");
+    if (movimento.x == -2) { // Se andou duas colunas para a esquerda
+      if (player) { // Se foi uma pecça vermelha que realizou este movimento
+        if (tabuleiro[origin.x - 1][origin.y + 1] == 3) { // Se na casa que foi pulada havia uma peça inimiga
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(1, -1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
         } else {
-          console.log("Movimento invalido, voltei para a origem");
-          if (player) {
-            dama1[index].move(origin);
-          } else {
-            dama2[index].move(origin);
-          }
-          //player = !player;
-          return false;
-        }
-      } else if (movimento.y == -2) { // Se andou duas linhas para cima
-        console.log("Verificação da captura simples", casaMouse, origin);
-        if (movimento.x == -2) {
-          if (player) { // Se foi uma peça vermelha que realizou este movimento
-            if (tabuleiro[origin.x - 1][origin.y - 1] == 3) {
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(1, 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else { // Se foi uma peça vermelha que realizou este movimento
-            if (tabuleiro[origin.x - 1][origin.y - 1] == 2) {
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(1, 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        } else if (movimento.x == 2) {
-          if (player) { // Se foi uma peça vermelha que realizou este movimento
-            if (tabuleiro[origin.x + 1][origin.y - 1] == 3) {
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(-1, 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else { // Se foi uma peça branca que realizou este movimento
-            if (tabuleiro[origin.x + 1][origin.y - 1] == 2) {
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(origin.sub(-1, 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
-            } else {
-              console.log("Não Comeu legal");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        } else {
-          console.log("Movimento invalido, voltei para a origem");
-          if (player) {
-            dama1[index].move(origin);
-          } else {
-            dama2[index].move(origin);
-          }
-          //player = !player;
-          return false;
-        }
-      } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() == sqrt(2)) { // Se moveu apenas uma casa e para uma casa vazia
-        console.log("Movimento Simples");
-        if (player) {
-          dama1[index].move(casaMouse, tabuleiro);
-        } else {
-          dama2[index].move(casaMouse, tabuleiro);
-        }
-      } else if (movimento.y == 4) {
-
-        if (movimento.x == 0) {
-
-          if (player) {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y - 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y-1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x+1,casaMouse.y - 3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y - 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y - 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y-3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y - 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y-1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x+1,casaMouse.y - 3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y - 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y - 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y-3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        } else if (movimento.x == 4) {
-
-          if (player) {
-
-            if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x -2 ][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x -3 ][casaMouse.y - 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y-1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x-3,casaMouse.y - 3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x -3][casaMouse.y - 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y-1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x-3,casaMouse.y - 3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-
-          }
-
-        } else if (movimento.x == -4) {
-          if (player) {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x +2 ][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x +3 ][casaMouse.y - 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y-1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x+3,casaMouse.y - 3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x +3][casaMouse.y - 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y-1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x+3,casaMouse.y - 3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y-3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-
-          }
-
-        } else {
-          console.log("Movimento invalido, voltei para a origem");
-          if (player) {
-            dama1[index].move(origin);
-          } else {
-            dama2[index].move(origin);
-          }
-          //player = !player;
-          return false;
-        }
-      } else if (movimento.y == -4) {
-        if (movimento.x == 0) {
-
-          if (player) {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y + 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y+1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x+1,casaMouse.y + 3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y + 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y + 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y+3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y + 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y+1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x+1,casaMouse.y + 3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y + 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y + 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y+3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        } else if (movimento.x == 4) {
-
-          if (player) {
-
-            if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x -2 ][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x -3 ][casaMouse.y + 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y+1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x-3,casaMouse.y + 3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x -3][casaMouse.y + 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y+1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x-3,casaMouse.y + 3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-
-          }
-
-        } else if (movimento.x == -4) {
-          if (player) {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x +2 ][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x +3 ][casaMouse.y + 3] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y+1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x+3,casaMouse.y + 3), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x +3][casaMouse.y + 3] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y+1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x+3,casaMouse.y + 3), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y+3] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-
-          }
-
-        } else {
-          console.log("Movimento invalido, voltei para a origem");
-          if (player) {
-            dama1[index].move(origin);
-          } else {
-            dama2[index].move(origin);
-          }
-          //player = !player;
-          return false;
-        }
-      } else if(movimento.x == -4){
-        if (movimento.y == 0) {
-
-          if (player) {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y - 1] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y-1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x+3,casaMouse.y - 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y + 1] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y + 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x + 3,casaMouse.y+1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y - 1] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y-1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x+3,casaMouse.y - 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y +1] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x + 1,casaMouse.y + 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x + 3,casaMouse.y+1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x+3][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        }else {
-          console.log("Movimento invalido, voltei para a origem");
-          if (player) {
-            dama1[index].move(origin);
-          } else {
-            dama2[index].move(origin);
-          }
-          //player = !player;
-          return false;
-        }
-
-      } else if(movimento.x == 4){
-        if (movimento.y == 0) {
-
-          if (player) {
-
-            if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y - 1] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y-1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-              removeIndex = casaOcupada(createVector(casaMouse.x-3,casaMouse.y - 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y + 1] == 3) {
-              
-              console.log("Comeu legal");
-              dama1[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y + 1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x - 3,casaMouse.y+1), false);
-              dama2.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama1[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          } else {
-
-            if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y - 1] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y-1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro             
-              removeIndex = casaOcupada(createVector(casaMouse.x-3,casaMouse.y - 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y-1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y +1] == 2) {
-              
-              console.log("Comeu legal");
-              dama2[index].move(casaMouse, tabuleiro); //move a peca
-              var removeIndex = casaOcupada(createVector(casaMouse.x - 1,casaMouse.y + 1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-1][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro              
-              removeIndex = casaOcupada(createVector(casaMouse.x - 3,casaMouse.y+1), true);
-              dama1.splice(removeIndex, 1); // remove a peca capturada do array
-              tabuleiro[casaMouse.x-3][casaMouse.y+1] = 0; // remove a peca capturada do tabuleiro
-            
-            } else {
-              console.log("Movimento invalido, voltei para a origem");
-              dama2[index].move(origin);
-              //player = !player;
-              return false;
-            }
-          }
-        }else {
-          console.log("Movimento invalido, voltei para a origem");
-          if (player) {
-            dama1[index].move(origin);
-          } else {
-            dama2[index].move(origin);
-          }
-          //player = !player;
-          return false;
-        }
-        
-      }else {
-        console.log("Movimento invalido, voltei para a origem",player);
-        if (player) {
+          console.log("Não Comeu legal");
           dama1[index].move(origin);
-        } else {
-          dama2[index].move(origin);
+          //player = !player;
+          return false;
         }
-        //player = !player;
-        return false;
+      } else { // Se foi uma peça branca que realizou este movimento
+        if (tabuleiro[origin.x - 1][origin.y + 1] == 2) { // Se na casa que foi pulada havia uma peça inimiga
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(1, -1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
       }
-      
-      console.log("EU sou daqui, sou da terra inverter");
-      player = !player;
-      return true;
+    } else if (movimento.x == 2) { // Se andou duas colunas para a direita
+      if (player) { // Se foi uma peça vermelha que realizou este movimento
+        if (tabuleiro[origin.x + 1][origin.y + 1] == 3) {
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(-1, -1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else { // Se foi uma peça branca que realizou este movimento
+        if (tabuleiro[origin.x + 1][origin.y + 1] == 2) {
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(-1, -1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      }
+    } else {
+      console.log("Movimento invalido, voltei para a origem");
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      //player = !player;
+      return false;
+    }
+  
+  } else if (movimento.y == -2) { // Se andou duas linhas para cima
+    console.log("Verificação da captura simples", casaMouse, origin);
+    if (movimento.x == -2) {
+      if (player) { // Se foi uma peça vermelha que realizou este movimento
+        if (tabuleiro[origin.x - 1][origin.y - 1] == 3) {
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(1, 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else { // Se foi uma peça vermelha que realizou este movimento
+        if (tabuleiro[origin.x - 1][origin.y - 1] == 2) {
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(1, 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      }
+    } else if (movimento.x == 2) {
+      if (player) { // Se foi uma peça vermelha que realizou este movimento
+        if (tabuleiro[origin.x + 1][origin.y - 1] == 3) {
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(-1, 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else { // Se foi uma peça branca que realizou este movimento
+        if (tabuleiro[origin.x + 1][origin.y - 1] == 2) {
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(origin.sub(-1, 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[origin.x][origin.y] = 0; // remove a peca capturada do tabuleiro
+        } else {
+          console.log("Não Comeu legal");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      }
+    } else {
+      console.log("Movimento invalido, voltei para a origem");
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      //player = !player;
+      return false;
+    }
+  
+  } else if (tabuleiro[casaMouse.x][casaMouse.y] == 0 && movimento.mag() == sqrt(2)) { // Se moveu apenas uma casa e para uma casa vazia
+    console.log("Movimento Simples");
+    if (player && movimento.y >= 0) {
+      dama1[index].move(casaMouse, tabuleiro);
+    } else if(!player && movimento.y <= 0){
+      dama2[index].move(casaMouse, tabuleiro);
+    } else {
+      console.log("Movimento invalido, voltei para a origem", player);
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      return false;
+    }
+  
+  } else if (movimento.y == 4) {
+
+    if (movimento.x == 0) {
+
+      if (player) {
+        if(casaMouse.x<6){
+          if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y - 3] == 3 ) {
+
+            console.log("Comeu legal");
+            dama1[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 1), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x + 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+            removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 3), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x + 1][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+            return true;
+
+          }
+        } 
+        if(casaMouse.x>1){
+          if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y - 3] == 3) {
+
+            console.log("Comeu legal");
+            dama1[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 1), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x - 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+            removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 3), false);
+            dama2.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x - 1][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+            return true;
+          }
+        }
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          return false;
+      } else {
+        if(casaMouse.x<6){
+          if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y - 3] == 2 && casaMouse.x<6 ) {
+
+            console.log("Comeu legal");
+            dama2[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 1), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x + 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+            removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 3), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x + 1][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+            return true;
+
+          }
+        } 
+        if(casaMouse.x>1){
+          if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y - 3] == 2 && casaMouse.x>1) {
+
+            console.log("Comeu legal");
+            dama2[index].move(casaMouse, tabuleiro); //move a peca
+            var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 1), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x - 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+            removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 3), true);
+            dama1.splice(removeIndex, 1); // remove a peca capturada do array
+            tabuleiro[casaMouse.x - 1][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+            return true;
+
+          }
+        } 
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          return false;
+      }
+    
+    } else if (movimento.x == 4) {
+
+      if (player) {
+
+        if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y - 3] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y - 3), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y - 3] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y - 3), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+
+      }
+
+    } else if (movimento.x == -4) {
+      if (player) {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y - 3] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y - 3), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y - 3] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y - 3), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y - 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+
+      }
+
+    } else {
+      console.log("Movimento invalido, voltei para a origem");
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      //player = !player;
+      return false;
+    }
+  
+  } else if (movimento.y == -4) {
+    if (movimento.x == 0) {
+
+      if (player) {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y + 3] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 3), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y + 3] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 3), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 1][casaMouse.y + 3] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 3), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y + 3] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 3), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      }
+    } else if (movimento.x == 4) {
+
+      if (player) {
+
+        if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y + 3] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y + 3), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y + 3] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y + 3), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+
+      }
+
+    } else if (movimento.x == -4) {
+      if (player) {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y + 3] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y + 3), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y + 3] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y + 3), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+
+      }
+
+    } else {
+      console.log("Movimento invalido, voltei para a origem");
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      //player = !player;
+      return false;
+    }
+  
+  } else if (movimento.x == -4) {
+    if (movimento.y == 0) {
+
+      if (player) {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y - 1] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y - 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y + 1] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x + 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y - 1] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y - 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y - 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else if (tabuleiro[casaMouse.x + 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x + 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x + 3][casaMouse.y + 1] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x + 1, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x + 3, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x + 3][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      }
+    } else {
+      console.log("Movimento invalido, voltei para a origem");
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      //player = !player;
+      return false;
+    }
+
+  } else if (movimento.x == 4) {
+    if (movimento.y == 0) {
+
+      if (player) {
+
+        if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y - 1] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y - 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y + 1] == 3) {
+
+          console.log("Comeu legal");
+          dama1[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y + 1), false);
+          dama2.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama1[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      } else {
+
+        if (tabuleiro[casaMouse.x - 1][casaMouse.y - 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y - 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y - 1] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y - 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y - 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y - 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 2 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 3][casaMouse.y + 1] == 2) {
+
+          console.log("Comeu legal");
+          dama2[index].move(casaMouse, tabuleiro); //move a peca
+          var removeIndex = casaOcupada(createVector(casaMouse.x - 1, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 1][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+          removeIndex = casaOcupada(createVector(casaMouse.x - 3, casaMouse.y + 1), true);
+          dama1.splice(removeIndex, 1); // remove a peca capturada do array
+          tabuleiro[casaMouse.x - 3][casaMouse.y + 1] = 0; // remove a peca capturada do tabuleiro
+
+        } else {
+          console.log("Movimento invalido, voltei para a origem");
+          dama2[index].move(origin);
+          //player = !player;
+          return false;
+        }
+      }
+    } else {
+      console.log("Movimento invalido, voltei para a origem");
+      if (player) {
+        dama1[index].move(origin);
+      } else {
+        dama2[index].move(origin);
+      }
+      //player = !player;
+      return false;
+    }
+
+  } else {
+    console.log("Movimento invalido, voltei para a origem", player);
+    if (player) {
+      dama1[index].move(origin);
+    } else {
+      dama2[index].move(origin);
+    }
+    //player = !player;
+    return false;
+  }
+
+  //console.log("EU sou daqui, sou da terra inverter");
+  player = !player;
+  return true;
 }
-
-
-              
-

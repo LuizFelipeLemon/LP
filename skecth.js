@@ -906,7 +906,6 @@ function verifica(casaMouse) {
       } else {
         dama2[index].move(origin);
       }
-      //player = !player;
       return false;
     }
 
@@ -926,7 +925,7 @@ function verifica(casaMouse) {
   return true;
 }
 
-function begin() {
+function begin() {  //Inicializa as posições iniciais das peças
   for (var i = 0; i < 12; i++) {
     dama1[i] = new Dama(true);
     dama2[i] = new Dama(false);

@@ -7,6 +7,8 @@ var player = true;  //Permite a alternância de jogadores
 var origin; //armazena a origem do movimento casa ele seja inválido
 var tabuleiro = new Array(8); // matriz para mapeamento do tabuleiro
 var estado = 0; //Variável para o controle das telas
+var luiz;
+
 
 function setup() {
 
@@ -14,6 +16,9 @@ function setup() {
   canvas.mouseClicked(clicou);
 
   drawBoard(); //Chama a funcao que vai desenhar o tabuleiro
+  luiz = new Tabuleiro();
+
+  luiz.begin();
   /*
     ___________________________________
     | 0 --> casa preta                 |
@@ -40,12 +45,13 @@ function setup() {
 
 
 function draw() {
-    
+    frameRate(5);
   //Condições para decidir qual tela mostrar
 
   if (estado == 0) {  //Tela de Menu
 
     menu();
+    luiz.draw();
   
   } else if (estado == 1) { /////////////////////////////// Jogo Player vc Player\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 

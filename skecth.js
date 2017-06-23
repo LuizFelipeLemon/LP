@@ -15,10 +15,10 @@ function setup() {
   canvas = createCanvas(601, 601); //Cria um tela 600x600
   canvas.mouseClicked(clicou);
 
-  drawBoard(); //Chama a funcao que vai desenhar o tabuleiro
-  luiz = new Tabuleiro();
+  //drawBoard(); //Chama a funcao que vai desenhar o tabuleiro
+  tab = new Tabuleiro();
 
-  luiz.begin();
+  tab.begin();
   /*
     ___________________________________
     | 0 --> casa preta                 |
@@ -45,13 +45,12 @@ function setup() {
 
 
 function draw() {
-    frameRate(5);
+    //frameRate(5);
   //Condições para decidir qual tela mostrar
 
   if (estado == 0) {  //Tela de Menu
 
     menu();
-    luiz.draw();
   
   } else if (estado == 1) { /////////////////////////////// Jogo Player vc Player\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -91,14 +90,9 @@ function draw() {
       estado = 3;
     }
     
-    drawBoard();
+    tab.draw();
 
-    for (var i = dama1.length - 1; i >= 0; i--) { //Mostra as peças
-      dama1[i].update();
-    }
-    for (var i = dama2.length - 1; i >= 0; i--) { //Mostra as pecas
-      dama2[i].update();
-    }
+    
 
     if (update) {//atualiza as posicoes da peça caso o jogador tenha selecionado uma peça
 
@@ -182,10 +176,11 @@ function clicou() { //Função chamada quando o mouse é clicado
     var computer = new Computer();  //Cria um objeto computer
     var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // Casa respectiva do mouse
 
-    if (!update && casaOcupada(casaMouse, false) != -1) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
+    if (!update) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
+
+      origin = casaMouse;//Guarda a origem
 
       index = casaOcupada(casaMouse, false);  //Guarda o index
-      origin = createVector(dama2[index].casa.x, dama2[index].casa.y);//Guarda a origem
       update = true; //Informa que o proximo clique vai ser para soltar
 
     } else if (update) { //Se o clique for para soltar a peca
@@ -207,21 +202,8 @@ function clicou() { //Função chamada quando o mouse é clicado
 function casaOcupada(casa, play) {  //Função que recebe um vetor casa e o jogador e retorna o index do objeto que ocupa aquela casa
   //Retorna -1 se ninguem ocupa a quela casa
   var indexOcupado = -1;
-
-  if (play) {
-    for (var i = dama1.length - 1; i >= 0; i--) {
-      if (dama1[i].casa.equals(casa)) {
-        indexOcupado = i;
-      }
-    }
-  } else {
-    for (var i = dama2.length - 1; i >= 0; i--) {
-      if (dama2[i].casa.equals(casa)) {
-        indexOcupado = i;
-      }
-    }
-  }
-  return indexOcupado;
+  console.log(tab.tabuleiro[casa.x][casa.y]);
+  return tab.tabuleiro[casa.x][casa.y];
 }
 
 function menu() { //Desenha o Menu

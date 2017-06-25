@@ -1,9 +1,10 @@
 var dama1 = []; // cria um array para cada jogador
 var dama2 = [];
-var canvas;     //Variável para guardar a tela
+var canvas; //Variável para guardar a tela
 var update = false; //Indica que uma peça foi selecionada ou soltada
-var index = 0;  //Guarda o index no array da peçça selecionada
-var player = true;  //Permite a alternância de jogadores
+var index = 0; //Guarda o index no array da peçça selecionada
+var piece; //Guarda a peça selecionada
+var player = true; //Permite a alternância de jogadores
 var origin; //armazena a origem do movimento casa ele seja inválido
 var tabuleiro = new Array(8); // matriz para mapeamento do tabuleiro
 var estado = 0; //Variável para o controle das telas
@@ -28,7 +29,7 @@ function setup() {
     |__________________________________|
   */
 
-  for (var i = 0; i < 8; i++) { //Preenche a matriz com casas pretas e brancas 
+  for (var i = 0; i < 8; i++) { //Preenche a matriz com casas pretas e brancas
     tabuleiro[i] = new Array(8);
     var k = 0;
     for (var j = 0; j < 8; j++) {
@@ -45,20 +46,20 @@ function setup() {
 
 
 function draw() {
-    //frameRate(5);
+  //frameRate(5);
   //Condições para decidir qual tela mostrar
 
-  if (estado == 0) {  //Tela de Menu
+  if (estado == 0) { //Tela de Menu
 
     menu();
-  
+
   } else if (estado == 1) { /////////////////////////////// Jogo Player vc Player\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     if (dama1.length == 0 || dama2.length == 0) { //Encerra o jogo caso tenha acabado as peças de algum dos jogadores
       estado = 3;
     }
 
-    drawBoard();  //Desenha o tabuleiro
+    drawBoard(); //Desenha o tabuleiro
 
     for (var i = dama1.length - 1; i >= 0; i--) { //Mostra as pecas
       dama1[i].update();
@@ -78,27 +79,27 @@ function draw() {
       } else {
         dama2[index].position = mouse;
       }
-    } 
+    }
 
   } else if (estado == 3) { // Tela de fim de Jogo
 
     fimDeJogo();
 
-  } else if (estado == 2) {/////////////////////////////// Jogo Player vc PC\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-      
+  } else if (estado == 2) { /////////////////////////////// Jogo Player vc PC\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
     if (dama1.length == 0 || dama2.length == 0) { //Encerra o jogo caso tenha acabado as peças de algum dos jogadores
       estado = 3;
     }
-    
+
     tab.draw();
 
-    
 
-    if (update) {//atualiza as posicoes da peça caso o jogador tenha selecionado uma peça
 
-      mouse = createVector(mouseX, mouseY);
-      dama2[index].position = mouse; //Escreve diretamente no segundo vetor pois o jogador só pode selecionar estas peças
-
+    if (update) { //atualiza as posicoes da peça caso o jogador tenha selecionado uma peça
+      if (index != -1) {
+        mouse = createVector(mouseX, mouseY);
+        index.position = mouse;
+      }
     }
   }
 }
@@ -123,24 +124,24 @@ function drawBoard() { //Desenha o tabuleiro
 
 function clicou() { //Função chamada quando o mouse é clicado
   //Exige verificações para cada tela
-  
-  if (estado == 0) {  //Se o clique aconteceu na tela de Menu
-    if (mouseX >= 50 && mouseX <= 200 && mouseY >= 200 && mouseY <= 275) {  //Caso tenha clicado no botão de PvP
-      
-      estado++; // Permite que troque a tela
-      begin();  // Inicia os objetos nas posições iniciais
 
-    } else if (mouseX >= 230 && mouseX <= 380 && mouseY >= 200 && mouseY <= 275) {//Caso tenha clicado no botão de sair
-      
-      close();  //Encerra a guia
-    
+  if (estado == 0) { //Se o clique aconteceu na tela de Menu
+    if (mouseX >= 50 && mouseX <= 200 && mouseY >= 200 && mouseY <= 275) { //Caso tenha clicado no botão de PvP
+
+      estado++; // Permite que troque a tela
+      begin(); // Inicia os objetos nas posições iniciais
+
+    } else if (mouseX >= 230 && mouseX <= 380 && mouseY >= 200 && mouseY <= 275) { //Caso tenha clicado no botão de sair
+
+      close(); //Encerra a guia
+
     } else if (mouseX >= 400 && mouseX <= 550 && mouseY >= 200 && mouseY <= 275) {
-      
+
       estado = 2; // Permite que troque a tela
-      begin();    // Inicia os objetos nas posições iniciais
+      begin(); // Inicia os objetos nas posições iniciais
 
     }
-  
+
   } else if (estado == 1) { // Se o clique aconteceu na tela de Jogo PvP
 
     //Neste caso temos duas possibilidades:
@@ -149,7 +150,7 @@ function clicou() { //Função chamada quando o mouse é clicado
     var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // Casa respectiva do mouse
     console.log(casaOcupada(casaMouse, player));
     if (!update && casaOcupada(casaMouse, player) != -1) { //Verifica se o clique eh para selecionar e se a casa clicada possui uma peca
- 
+
       index = casaOcupada(casaMouse, player); // variável que armazena o index para permitir que sua posição seja alterada na função draw
 
       if (player) { // Guarda a origem da peça selecionada
@@ -160,46 +161,53 @@ function clicou() { //Função chamada quando o mouse é clicado
       update = true; //Informa que o proximo clique vai ser para soltar
 
     } else if (update) { //Se o clique for para soltar a peca
-      
-      verifica(casaMouse);//Verifica se o jogador se moveu pra uma peça válida, caso contrário ela será movida para a origem dentro da função
+
+      verifica(casaMouse); //Verifica se o jogador se moveu pra uma peça válida, caso contrário ela será movida para a origem dentro da função
 
     }
   } else if (estado == 3) { // Se o clique aconteceu na tela de Fim de Jogo
     if (mouseX >= 360 && mouseX <= 510 && mouseY >= 200 && mouseY <= 275) { //Caso tenha clicado no botão de Menu
       estado = 0; //retorna aou menu
     } else if (mouseX >= 85 && mouseX <= 235 && mouseY >= 200 && mouseY <= 275) { //Caso tenha clicado no botão de Sair
-      close();  //Encerra a guia
+      close(); //Encerra a guia
     }
   } else if (estado == 2) { // Se o clique aconteceu na tela de Jogo PvC
-    
+
     player = false; //Permite que quem comece jogando seja as peças brancas
-    var computer = new Computer();  //Cria um objeto computer
+    var computer = new Computer(); //Cria um objeto computer
     var casaMouse = createVector(parseInt(mouseX / 75), parseInt(mouseY / 75)); // Casa respectiva do mouse
 
     if (!update) { //Verifica se o clique eh para selecionar ou para soltar a peca e se a casa clicada possui uma peca
 
-      origin = casaMouse;//Guarda a origem
-
-      index = casaOcupada(casaMouse, false);  //Guarda o index
+      origin = casaMouse; //Guarda a origem
+      var c = color(255, 89, 89);
+      console.log(tab.tabuleiro[casaMouse.x][casaMouse.y].color.levels[2] == 89);
+      if (typeof(tab.tabuleiro[casaMouse.x][casaMouse.y]) == "object") {
+        if (tab.tabuleiro[casaMouse.x][casaMouse.y].color.levels[2] == 89) {
+          index = tab.tabuleiro[casaMouse.x][casaMouse.y];
+        }
+      } else {
+        index = -1;
+      }
       update = true; //Informa que o proximo clique vai ser para soltar
 
-    } else if (update) { //Se o clique for para soltar a peca
+    } else { //Se o clique for para soltar a peca
 
-      if (verifica(casaMouse)) {  //Verifica se o movimento foi válido para só assim permitir que o computador jogue
+      if (verifica(casaMouse)) { //Verifica se o movimento foi válido para só assim permitir que o computador jogue
 
-          //Repete a jogada do computador até que seja uma jogada válida
-          do {
-            var vector = computer.play();
-          }
-          while (!(casaOcupada(vector, true) == -1 && casaOcupada(vector, false) == -1) || !verifica(vector));
-          console.log("Sai");
+        //Repete a jogada do computador até que seja uma jogada válida
+        do {
+          var vector = computer.play();
+        }
+        while (!(casaOcupada(vector, true) == -1 && casaOcupada(vector, false) == -1) || !verifica(vector));
+        console.log("Sai");
       }
     }
   }
 }
 
 
-function casaOcupada(casa, play) {  //Função que recebe um vetor casa e o jogador e retorna o index do objeto que ocupa aquela casa
+function casaOcupada(casa, play) { //Função que recebe um vetor casa e o jogador e retorna o index do objeto que ocupa aquela casa
   //Retorna -1 se ninguem ocupa a quela casa
   var indexOcupado = -1;
   console.log(tab.tabuleiro[casa.x][casa.y]);
@@ -228,7 +236,7 @@ function menu() { //Desenha o Menu
   text("Sair", width / 2 - 30, height / 2 - 50); // texto para sair
 }
 
-function fimDeJogo() {  //Desenha a tela de fim de Jogo
+function fimDeJogo() { //Desenha a tela de fim de Jogo
   background(0, 0, 0);
   textSize(80); // tamanho do texto de fim de jogo
   fill(255, 255, 0); // nome fim de jogo
@@ -284,7 +292,7 @@ function verifica(casaMouse) {
       }
     } else if (movimento.x == 2) { // Se andou duas colunas para a direita
       if (player) { // Se foi uma peça vermelha que realizou este movimento
-        if (tabuleiro[origin.x + 1][origin.y + 1] == 3&& tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+        if (tabuleiro[origin.x + 1][origin.y + 1] == 3 && tabuleiro[casaMouse.x][casaMouse.y] == 0) {
           console.log("Comeu legal");
           dama1[index].move(casaMouse, tabuleiro); //move a peca
           var removeIndex = casaOcupada(origin.sub(-1, -1), false);
@@ -297,7 +305,7 @@ function verifica(casaMouse) {
           return false;
         }
       } else { // Se foi uma peça branca que realizou este movimento
-        if (tabuleiro[origin.x + 1][origin.y + 1] == 2&& tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+        if (tabuleiro[origin.x + 1][origin.y + 1] == 2 && tabuleiro[casaMouse.x][casaMouse.y] == 0) {
           console.log("Comeu legal");
           dama2[index].move(casaMouse, tabuleiro); //move a peca
           var removeIndex = casaOcupada(origin.sub(-1, -1), true);
@@ -338,7 +346,7 @@ function verifica(casaMouse) {
           return false;
         }
       } else { // Se foi uma peça vermelha que realizou este movimento
-        if (tabuleiro[origin.x - 1][origin.y - 1] == 2&& tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+        if (tabuleiro[origin.x - 1][origin.y - 1] == 2 && tabuleiro[casaMouse.x][casaMouse.y] == 0) {
           console.log("Comeu legal");
           dama2[index].move(casaMouse, tabuleiro); //move a peca
           var removeIndex = casaOcupada(origin.sub(1, 1), true);
@@ -366,7 +374,7 @@ function verifica(casaMouse) {
           return false;
         }
       } else { // Se foi uma peça branca que realizou este movimento
-        if (tabuleiro[origin.x + 1][origin.y - 1] == 2&& tabuleiro[casaMouse.x][casaMouse.y] == 0) {
+        if (tabuleiro[origin.x + 1][origin.y - 1] == 2 && tabuleiro[casaMouse.x][casaMouse.y] == 0) {
           console.log("Comeu legal");
           dama2[index].move(casaMouse, tabuleiro); //move a peca
           var removeIndex = casaOcupada(origin.sub(-1, 1), true);
@@ -594,7 +602,7 @@ function verifica(casaMouse) {
             tabuleiro[casaMouse.x + 1][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
             return true;
           }
-        } 
+        }
         if (casaMouse.x > 1) {
 
           if (tabuleiro[casaMouse.x - 1][casaMouse.y + 1] == 3 && tabuleiro[casaMouse.x - 2][casaMouse.y + 2] == 0 && tabuleiro[casaMouse.x - 1][casaMouse.y + 3] == 3) {
@@ -608,13 +616,13 @@ function verifica(casaMouse) {
             dama2.splice(removeIndex, 1); // remove a peca capturada do array
             tabuleiro[casaMouse.x - 1][casaMouse.y + 3] = 0; // remove a peca capturada do tabuleiro
             return true;
-          } 
+          }
         }
 
         console.log("Movimento invalido, voltei para a origem");
         dama1[index].move(origin);
         return false;
-      
+
       } else {
         if (casaMouse.x < 6) {
 
@@ -648,9 +656,9 @@ function verifica(casaMouse) {
           }
         }
 
-          console.log("Movimento invalido, voltei para a origem");
-          dama2[index].move(origin);
-          return false;
+        console.log("Movimento invalido, voltei para a origem");
+        dama2[index].move(origin);
+        return false;
       }
     } else if (movimento.x == 4) {
 
@@ -913,7 +921,7 @@ function verifica(casaMouse) {
   return true;
 }
 
-function begin() {  //Inicializa as posições iniciais das peças
+function begin() { //Inicializa as posições iniciais das peças
   for (var i = 0; i < 12; i++) {
     dama1[i] = new Dama(true);
     dama2[i] = new Dama(false);
